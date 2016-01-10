@@ -1,0 +1,30 @@
+{
+	"tables": [
+		{
+			"version": 2,
+			"name": "wkfl_item_flows",
+			"prefix": "ifl_",
+			"fields": {
+				"id": {
+					"type": "int",
+					"autoincrement": true
+				},
+				"workflow": "varchar:64",
+				"type": "varchar:10",
+				"item": "int",
+				"step": {
+					"type": "varchar:64",
+					"default": ""
+				},
+				"status": {
+					"type": "enum:WAIT:OK:DONE:FAILED",
+					"default": "'OK'"
+				},
+				"attempts": {
+					"type": "int",
+					"default": "0"
+				}
+			}
+		}
+	]
+}
