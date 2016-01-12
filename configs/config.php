@@ -20,3 +20,4 @@ $WKFLDefaults[WKFL_DEFAULTS_PATHS] = array(
 	WKFL_DEFAULTS_PATH_STEPS => '/workflows/steps',
 	WKFL_DEFAULTS_PATH_WORKFLOWS => '/workflows'
 );
+$WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH] = \TooBasic\Sanitizer::DirPath("{$Directories[GC_DIRECTORIES_CACHE]}/wkflgraphs");

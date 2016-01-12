@@ -39,6 +39,10 @@ class Workflow {
 	 */
 	protected $_magic = false;
 	/**
+	 * @var string Current workflow configuration file path.
+	 */
+	protected $_path = false;
+	/**
 	 * @var boolean Current workflow status. It usually change after loading.
 	 */
 	protected $_status = false;
@@ -58,7 +62,8 @@ class Workflow {
 	//
 	// Public methods.
 	/**
-	 * @todo doc
+	 * This method provides access to the loaded configuration.
+	 *
 	 * @return \stdClass
 	 */
 	public function config() {
@@ -75,6 +80,19 @@ class Workflow {
 	 */
 	public function name() {
 		return $this->_name;
+	}
+	/**
+	 * This method provides access to this workflow's configuration file's
+	 * path.
+	 *
+	 * @return string Returns an absolute path.
+	 */
+	public function path() {
+		//
+		// Loading all required settings.
+		$this->load();
+
+		return $this->_path;
 	}
 	/**
 	 * This method is the one in charge of executing a step of a specific
@@ -257,18 +275,18 @@ class Workflow {
 			//
 			// Guessing names.
 			$fileName = Names::SnakeFilename($this->name());
-			$path = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_WORKFLOWS], $fileName, Paths::ExtensionJSON);
+			$this->_path = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_WORKFLOWS], $fileName, Paths::ExtensionJSON);
 			//
 			// Checking path existence.
-			if($path && is_readable($path)) {
-				$this->_config = json_decode(file_get_contents($path));
+			if($this->_path && is_readable($this->_path)) {
+				$this->_config = json_decode(file_get_contents($this->_path));
 				if($this->_config) {
 					$this->_status = true;
 				}
-			} elseif(!$path) {
+			} elseif(!$this->_path) {
 				$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Unknown workflow '{$this->name()}'.");
 			} else {
-				$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Unable to read workflow path '{$path}'.");
+				$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Unable to read workflow path '{$this->_path}'.");
 			}
 		}
 	}

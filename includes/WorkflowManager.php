@@ -10,6 +10,7 @@ namespace TooBasic\Workflows;
 //
 // Class aliases.
 use TooBasic\Managers\DBManager;
+use TooBasic\Sanitizer;
 
 /**
  * @class WorkflowManager
@@ -38,6 +39,132 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 	}
 	public function getWorkflow($workflowName) {
 		return WorkflowsFactory::Instance()->{$workflowName}($this->_log);
+	}
+	public function graphPath($workflowName) {
+		$out = false;
+
+		if(@require_once('Image/GraphViz.php')) {
+			$this->checkGraphsDirectories();
+			//
+			// Global dependencies.
+			global $WKFLDefaults;
+			//
+			// Default values.
+			$generateIt = false;
+
+			$workflow = $this->getWorkflow($workflowName);
+			$graphPath = Sanitizer::DirPath("{$WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH]}/{$workflowName}.png");
+			$graphThumbPath = Sanitizer::DirPath("{$WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH]}/{$workflowName}-256px.png");
+
+			if(!$generateIt && (!is_file($graphPath) || !is_file($graphThumbPath))) {
+				$generateIt = true;
+			}
+			if(!$generateIt) {
+				$workflowTime = filemtime($workflow->path());
+				$generateIt = filemtime($graphPath) < $workflowTime || filemtime($graphThumbPath) < $workflowTime;
+			}
+
+			if($generateIt) {
+				$this->_log->log(LGGR_LOG_LEVEL_INFO, "Gereating graph for '{$workflowName}'.");
+				$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "Workflow '{$workflowName}' graph path: '{$graphPath}'");
+				$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "                           thumb path: '{$graphThumbPath}'");
+
+				$graph = new \Image_GraphViz();
+
+				$graph->addNode('BEGIN', [
+					'shape' => 'circle',
+					'label' => '',
+					'color' => 'black'
+				]);
+
+				$workflowConfig = $workflow->config();
+
+				foreach($workflowConfig->steps as $stepName => $step) {
+					$graph->addNode($stepName, array(
+						'label' => $stepName,
+						'shape' => 'box'
+					));
+				}
+
+				$graph->addNode('END', [
+					'shape' => 'circle',
+					'label' => '',
+					'color' => 'black',
+					'style' => 'filled'
+				]);
+
+				$graph->addEdge(['BEGIN' => $workflowConfig->startsAt]);
+
+				foreach($workflowConfig->steps as $stepName => $step) {
+					foreach($step->connections as $connName => $conn) {
+						if(isset($conn->status)) {
+							switch($conn->status) {
+								case WKFL_ITEM_FLOW_STATUS_FAILED:
+								case WKFL_ITEM_FLOW_STATUS_DONE:
+									$graph->addEdge([$stepName => 'END'], [
+										'label' => $connName,
+										'fontcolor' => 'brown',
+										'color' => 'brown'
+									]);
+									break;
+								case WKFL_ITEM_FLOW_STATUS_WAIT:
+									$attrs = [
+										'label' => "{$connName}\n[wait]",
+										'color' => 'orange',
+										'fontcolor' => 'orange',
+										'style' => 'dashed'
+									];
+
+									if(isset($conn->wait)) {
+										$nodeName = "wait_{$stepName}";
+										$graph->addNode($nodeName, [
+											'shape' => 'box',
+											'label' => "wait:{$stepName}",
+											'fontcolor' => 'orange',
+											'color' => 'orange'
+										]);
+
+										$graph->addEdge([$stepName => $nodeName], $attrs);
+
+										$attrs['label'] = "{$connName}\n[wait<={$conn->wait->attempts}]";
+										$graph->addEdge([$nodeName => $stepName], $attrs);
+
+										$attrs['label'] = "{$connName}\n[wait>{$conn->wait->attempts}]";
+										if(isset($conn->wait->status)) {
+											$graph->addEdge([$nodeName => 'END'], $attrs);
+										} elseif(isset($conn->wait->step)) {
+											$graph->addEdge([$nodeName => $conn->wait->step], $attrs);
+										}
+									} else {
+										$nextStep = isset($conn->step) ? $conn->step : $stepName;
+										$graph->addEdge([$stepName => $nextStep], $attrs);
+									}
+									break;
+							}
+						} elseif(isset($conn->step)) {
+							$graph->addEdge([$stepName => $conn->step], [
+								'label' => $connName,
+								'fontcolor' => 'darkgreen',
+								'color' => 'darkgreen'
+							]);
+						}
+					}
+				}
+
+				file_put_contents($graphPath, $graph->fetch('png'));
+				file_put_contents($graphThumbPath, $graph->fetch('png'));
+				self::CropImage($graphThumbPath, 256);
+			}
+
+			$out = array(
+				WKFL_AFIELD_FILE => $graphPath,
+				WKFL_AFIELD_THUMB => $graphThumbPath
+			);
+		} else {
+			$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Pear GraphViz plugin hasn't been installed.");
+		}
+
+		return $out;
 	}
 	public function inject(Item $item, $workflowName, &$error = false) {
 		$out = true;
@@ -150,6 +277,27 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 	}
 	//
 	// Protected methods.
+	/**
+	 * This method performs some basic checks on required directories.
+	 */
+	protected function checkGraphsDirectories() {
+		//
+		// Global dependencies.
+		global $WKFLDefaults;
+		//
+		// Checking if it really is a directory.
+		if(!is_dir($WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH])) {
+			\TooBasic\debugThing("'{$WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH]}' is not a directory", \TooBasic\DebugThingTypeError);
+			die;
+		}
+		//
+		// Checking if the current system user has permissions to write
+		// inside it.
+		if(!is_writable($WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH])) {
+			\TooBasic\debugThing("'{$WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH]}' is not writable", \TooBasic\DebugThingTypeError);
+			die;
+		}
+	}
 	protected function init() {
 		parent::init();
 
@@ -173,5 +321,71 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 
 			$this->_log->log(LGGR_LOG_LEVEL_INFO, "Loaded factories: ".implode(', ', array_keys($this->_factories)).'.');
 		}
+	}
+	//
+	// Protected class methods.
+	protected static function CropImage($path, $maxSize) {
+		$ok = true;
+
+		$info = pathinfo($path);
+		$ext = strtolower($info["extension"]);
+		$data = array(
+			"width" => 0,
+			"height" => 0,
+			"errmsg" => "",
+			"errcode" => 0
+		);
+
+		$img = @imagecreatefrompng("{$path}");
+		if($ok && $img === false) {
+			$ok = false;
+		}
+
+		if($ok) {
+			//
+			// Load image and get image size.
+			$width = imagesx($img);
+			$height = imagesy($img);
+			if($width === false || $height === false) {
+				$ok = false;
+			} elseif($width <= $maxSize && $height < $maxSize) {
+				$ok = false;
+			} else {
+				//
+				// Calculate thumbnail size.
+				if($width > $height) {
+					$new_width = $maxSize;
+					$new_height = floor($height * ($maxSize / $width));
+				} else {
+					$new_width = floor($width * ($maxSize / $height));
+					$new_height = $maxSize;
+				}
+			}
+		}
+		//
+		// create a new temporary image.
+		if($ok) {
+			$tmp_img = imagecreatetruecolor($new_width, $new_height);
+			if($tmp_img === false) {
+				$ok = false;
+			}
+		}
+		//
+		// copy and resize old image into a new image.
+		if($ok) {
+			$ok = imagecopyresampled($tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+			if($ok) {
+				$data["width"] = $width;
+				$data["height"] = $height;
+			}
+		}
+		if($ok) {
+			$ok = unlink($path);
+		}
+		if($ok) {
+			$ok = @imagepng($tmp_img, "{$path}");
+		}
+
+		return $ok;
 	}
 }
