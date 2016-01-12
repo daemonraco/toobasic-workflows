@@ -36,12 +36,15 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 
 		return $out;
 	}
+	public function getWorkflow($workflowName) {
+		return WorkflowsFactory::Instance()->{$workflowName}($this->_log);
+	}
 	public function inject(Item $item, $workflowName, &$error = false) {
 		$out = true;
 
 		$this->_log->log(LGGR_LOG_LEVEL_INFO, "Injecting into workflow '{$workflowName}'. Item: ".json_encode($item->toArray()));
 
-		$workflow = WorkflowsFactory::Instance()->{$workflowName};
+		$workflow = $this->getWorkflow($workflowName);
 		if($workflow) {
 			$prefixes = array(
 				GC_DBQUERY_PREFIX_TABLE => $this->_dbprefix,
@@ -113,7 +116,7 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 
 		$this->loadFactories();
 
-		$workflow = WorkflowsFactory::Instance()->{$flow->workflow};
+		$workflow = $this->getWorkflow($flow->workflow);
 		$item = $this->_factories[$flow->type]->item($flow->item);
 
 		$this->_log->log(LGGR_LOG_LEVEL_INFO, 'Running flow: '.json_encode($flow->toArray()));

@@ -38,4 +38,27 @@ class ItemFlowsFactory extends \TooBasic\Representations\ItemsFactory {
 
 		return $out;
 	}
+	public function idByItem(Item $item) {
+		$out = false;
+
+		$this->queryAdapterPrefixes();
+
+		$query = $this->_db->queryAdapter()->select('wkfl_item_flows', array(
+			'type' => $item->type(),
+			'item' => $item->id()
+			), $this->_queryAdapterPrefixes);
+		$stmt = $this->_db->prepare($query[GC_AFIELD_QUERY]);
+
+		$stmt->execute($query[GC_AFIELD_PARAMS]);
+		$row = $stmt->fetch();
+		if($row) {
+			$out = $row["{$this->_CP_ColumnsPerfix}id"];
+		}
+
+		return $out;
+	}
+	public function itemByItem(Item $item) {
+		$id = $this->idByItem($item);
+		return $id ? $this->item($id) : false;
+	}
 }

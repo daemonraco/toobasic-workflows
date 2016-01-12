@@ -9,6 +9,7 @@ namespace TooBasic\Workflows;
 
 //
 // Class aliases.
+use TooBasic\Logs\AbstractLog;
 use TooBasic\MagicProp;
 use TooBasic\Names;
 use TooBasic\Paths;
@@ -30,7 +31,7 @@ class Workflow {
 	 */
 	protected $_name = false;
 	/**
-	 * @var \TooBasic\Log Log shortcut.
+	 * @var \TooBasic\Logs\AbstractLog Log shortcut.
 	 */
 	protected $_log = false;
 	/**
@@ -53,15 +54,20 @@ class Workflow {
 		//
 		// Saving name.
 		$this->_name = $name;
-		//
-		// Log shortcut.
-		$this->_log = $this->magic()->log->workflows;
-		//
-		// Loading configuration.
-		$this->load();
 	}
 	//
 	// Public methods.
+	/**
+	 * @todo doc
+	 * @return \stdClass
+	 */
+	public function config() {
+		//
+		// Loading all required settings.
+		$this->load();
+
+		return $this->_config;
+	}
 	/**
 	 * This method provides access to this workflow's name.
 	 *
@@ -86,6 +92,9 @@ class Workflow {
 		// Default values.
 		$continue = true;
 		//
+		// Loading all required settings.
+		$this->load();
+		//
 		// Global dependencies.
 		global $WKFLDefaults;
 		//
@@ -103,7 +112,7 @@ class Workflow {
 		// Shortcuts.
 		$stepConfig = $this->_config->steps->{$currentStep};
 		$stepPath = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_STEPS], Names::SnakeFilename($stepConfig->manager), Paths::ExtensionPHP);
-		$stepClass = Names::ClassNameWithSuffix($currentStep, WKFL_CLASS_SUFFIX_STEP);
+		$stepClass = Names::ClassNameWithSuffix($stepConfig->manager, WKFL_CLASS_SUFFIX_STEP);
 		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "        path: '{$stepPath}'");
 		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "       class: '{$stepClass}'");
 		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, '      config: '.json_encode($stepConfig));
@@ -211,16 +220,25 @@ class Workflow {
 
 		return $continue;
 	}
+	public function setLog(AbstractLog $log) {
+		$this->_log = $log;
+	}
 	/**
 	 * This method provides access to this workflow's current status.
 	 *
 	 * @return boolean Returns TRUE when it is correctly loaded.
 	 */
 	public function status() {
+		$this->load();
 		return $this->_status;
 	}
 	//
 	// Protected methods.
+	protected function checkLog() {
+		if(!$this->_log) {
+			throw new WorkflowsException("Log has not been set for this workflow");
+		}
+	}
 	/**
 	 * This method loads current workflow configuration.
 	 */
@@ -228,6 +246,9 @@ class Workflow {
 		//
 		// Avoiding multipe loads of configurations.
 		if($this->_config === false) {
+			//
+			// Checking log configuration
+			$this->checkLog();
 			$this->_log->log(LGGR_LOG_LEVEL_INFO, "Loading workflow '{$this->name()}'.");
 			$this->_status = false;
 			//
