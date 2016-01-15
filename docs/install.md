@@ -8,6 +8,7 @@ So, you need:
 * [__TooBasic__](https://github.com/daemonraco/toobasic) >= 1.1.0
 * [Git](https://git-scm.com/)
 	* This is optional if you use a TooBasic tarball.
+* Optionally [GraphViz](https://pear.php.net/package/Image_GraphViz).
 
 ## Installation
 There are two ways to install this module, either you clone from its Github
