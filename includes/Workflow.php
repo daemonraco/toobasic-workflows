@@ -109,6 +109,9 @@ class Workflow {
 		//
 		// Default values.
 		$continue = true;
+		$logParams = array(
+			'workflow' => $flow->workflow
+		);
 		//
 		// Loading all required settings.
 		$this->load();
@@ -125,15 +128,15 @@ class Workflow {
 			$flow->step = $currentStep;
 			$flow->persist();
 		}
-		$this->_log->log(LGGR_LOG_LEVEL_INFO, "Current step: '{$currentStep}'");
+		$this->_log->log(LGGR_LOG_LEVEL_INFO, "Current step: '{$currentStep}'", $logParams);
 		//
 		// Shortcuts.
 		$stepConfig = $this->_config->steps->{$currentStep};
 		$stepPath = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_STEPS], Names::SnakeFilename($stepConfig->manager), Paths::ExtensionPHP);
 		$stepClass = Names::ClassNameWithSuffix($stepConfig->manager, WKFL_CLASS_SUFFIX_STEP);
-		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "        path: '{$stepPath}'");
-		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "       class: '{$stepClass}'");
-		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, '      config: '.json_encode($stepConfig));
+		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "        path: '{$stepPath}'", $logParams);
+		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "       class: '{$stepClass}'", $logParams);
+		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, '      config: '.json_encode($stepConfig), $logParams);
 		//
 		// Checking if the step's class is already loaded.
 		if(!class_exists($stepClass)) {
@@ -141,7 +144,7 @@ class Workflow {
 			// Checking class code file.
 			if(!$stepPath || !is_readable($stepPath)) {
 				$msg = "Unable to access class for step '{$currentStep}'.";
-				$this->_log->log(LGGR_LOG_LEVEL_FATAL, $msg);
+				$this->_log->log(LGGR_LOG_LEVEL_FATAL, $msg, $logParams);
 				throw new WorkflowsException($msg);
 			}
 			require_once $stepPath;
@@ -150,7 +153,7 @@ class Workflow {
 		// Checking class existence.
 		if(!class_exists($stepClass)) {
 			$msg = "Class '{$stepClass}' not defined.";
-			$this->_log->log(LGGR_LOG_LEVEL_FATAL, $msg);
+			$this->_log->log(LGGR_LOG_LEVEL_FATAL, $msg, $logParams);
 			throw new WorkflowsException($msg);
 		}
 		//
@@ -169,7 +172,7 @@ class Workflow {
 		if(isset($stepConfig->connections->{$item->status()})) {
 			$connection = $stepConfig->connections->{$item->status()};
 		} else {
-			$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Unkwnon connection for item status '{$item->status()}'.");
+			$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Unkwnon connection for item status '{$item->status()}'.", $logParams);
 			$continue = false;
 			$flow->status = WKFL_ITEM_FLOW_STATUS_FAILED;
 			$flow->persist();
@@ -192,7 +195,7 @@ class Workflow {
 					$continue = false;
 				}
 			} else {
-				$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Neither step not status configuration for connection on status '{$item->status()}'.");
+				$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Neither step not status configuration for connection on status '{$item->status()}'.", $logParams);
 				$continue = false;
 				$flow->status = WKFL_ITEM_FLOW_STATUS_FAILED;
 			}
@@ -203,7 +206,7 @@ class Workflow {
 				//
 				// Checking configuration.
 				if(!isset($connection->wait->attempts) || !isset($connection->wait->status)) {
-					$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Waiting configuration is incorrect.");
+					$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Waiting configuration is incorrect.", $logParams);
 					$continue = false;
 					$flow->status = WKFL_ITEM_FLOW_STATUS_FAILED;
 				} else {
@@ -219,9 +222,9 @@ class Workflow {
 						// resetting counts.
 						$flow->status = $connection->wait->status;
 						$flow->attempts = 0;
-						$this->_log->log(LGGR_LOG_LEVEL_INFO, "Maximum attempts reached ({$connection->wait->attempts} attempts), changing flow status to '{$connection->wait->status}'.");
+						$this->_log->log(LGGR_LOG_LEVEL_INFO, "Maximum attempts reached ({$connection->wait->attempts} attempts), changing flow status to '{$connection->wait->status}'.", $logParams);
 					} else {
-						$this->_log->log(LGGR_LOG_LEVEL_INFO, "Increasing attempts to {$flow->attempts}.");
+						$this->_log->log(LGGR_LOG_LEVEL_INFO, "Increasing attempts to {$flow->attempts}.", $logParams);
 					}
 				}
 			} else {
@@ -233,7 +236,7 @@ class Workflow {
 			//
 			// Saving flow status.
 			$flow->persist();
-			$this->_log->log(LGGR_LOG_LEVEL_INFO, "Next step: '{$flow->step}'. Next flow status: '{$flow->status}'.");
+			$this->_log->log(LGGR_LOG_LEVEL_INFO, "Next step: '{$flow->step}'. Next flow status: '{$flow->status}'.", $logParams);
 		}
 
 		return $continue;

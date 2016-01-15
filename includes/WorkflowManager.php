@@ -245,17 +245,20 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 
 		$workflow = $this->getWorkflow($flow->workflow);
 		$item = $this->_factories[$flow->type]->item($flow->item);
+		$logParams = array(
+			'workflow' => $flow->workflow
+		);
 
-		$this->_log->log(LGGR_LOG_LEVEL_INFO, 'Running flow: '.json_encode($flow->toArray()));
-		$this->_log->log(LGGR_LOG_LEVEL_INFO, '        item: '.json_encode($item->toArray()));
+		$this->_log->log(LGGR_LOG_LEVEL_INFO, 'Running flow: '.json_encode($flow->toArray()), $logParams);
+		$this->_log->log(LGGR_LOG_LEVEL_INFO, '        item: '.json_encode($item->toArray()), $logParams);
 
 		$continue = true;
 		while($continue && $flow->status == WKFL_ITEM_FLOW_STATUS_OK) {
 			$continue = $workflow->runFor($flow, $item);
 			$flow->load($flow->id);
-			$this->_log->log(LGGR_LOG_LEVEL_INFO, 'Current flow status: '.json_encode($flow->toArray()));
-			$this->_log->log(LGGR_LOG_LEVEL_INFO, '        item status: '.json_encode($item->toArray()));
-			$this->_log->log(LGGR_LOG_LEVEL_INFO, 'Continue?: '.($continue ? 'Yes' : 'No'));
+			$this->_log->log(LGGR_LOG_LEVEL_INFO, 'Current flow status: '.json_encode($flow->toArray()), $logParams);
+			$this->_log->log(LGGR_LOG_LEVEL_INFO, '        item status: '.json_encode($item->toArray()), $logParams);
+			$this->_log->log(LGGR_LOG_LEVEL_INFO, 'Continue?: '.($continue ? 'Yes' : 'No'), $logParams);
 		}
 
 		return $out;
