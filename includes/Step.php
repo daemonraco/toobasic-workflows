@@ -9,6 +9,7 @@ namespace TooBasic\Workflows;
 
 //
 // Class aliases.
+use TooBasic\Logs\AbstractLog;
 use TooBasic\MagicProp;
 use TooBasic\MagicPropException;
 
@@ -24,6 +25,10 @@ abstract class Step {
 	 * @var \TooBasic\Workflows\Item Item being analyzed by this step.
 	 */
 	protected $_item = false;
+	/**
+	 * @var \TooBasic\Logs\AbstractLog Log shortcut.
+	 */
+	protected $_log = false;
 	//
 	// Magic methods.
 	public function __construct(Item $item) {
@@ -59,4 +64,12 @@ abstract class Step {
 	 * it.
 	 */
 	abstract public function execute();
+	/**
+	 * This method updates the internal log shortcut.
+	 *
+	 * @param \TooBasic\Logs\AbstractLog $log Log poiner.
+	 */
+	public function setLog(AbstractLog $log) {
+		$this->_log = $log;
+	}
 }

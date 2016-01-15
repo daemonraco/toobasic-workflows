@@ -160,6 +160,9 @@ class Workflow {
 		// Getting a step execution class.
 		$step = new $stepClass($item);
 		//
+		// Sharing log pointer.
+		$step->setLog($this->_log);
+		//
 		// Step execution
 		$step->execute();
 		//
@@ -241,6 +244,11 @@ class Workflow {
 
 		return $continue;
 	}
+	/**
+	 * This method updates the internal log shortcut.
+	 *
+	 * @param \TooBasic\Logs\AbstractLog $log Log poiner.
+	 */
 	public function setLog(AbstractLog $log) {
 		$this->_log = $log;
 	}

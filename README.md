@@ -197,6 +197,9 @@ case.
 Have this type in mind because your gonna be using it later, and for our examples
 we're going to use `IMAGE`.
 
+As you may have imagine by now, the thing `$this->_item` inside your step classes
+is a pointer to your item reprensetation, in our case, an `ImageRepresentation`.
+
 ### Configuration
 Finally, your workflows need to know how to solve ids for items they manage using
 the proper item factory.
