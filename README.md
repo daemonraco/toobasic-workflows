@@ -105,9 +105,11 @@ in:
 }
 ```
 
-_What the heck is this JSON?!_
+_WOW! what the heck is this JSON?!_
 
 I known, it looks complicated, but you'll see the meaning as we explain each step.
+In the mean time, think about this:
+<center>![new_image](http://i.imgur.com/xWlsAQf.png)</center>
 
 ### Step: validation
 Validations is where you call to your method `ImagesModel::validateImage()`, but
