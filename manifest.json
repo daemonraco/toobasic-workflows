@@ -10,8 +10,8 @@
 	},
 	"copyright": "2016",
 	"license": "GPLv3",
-	"url": "http://toobasic.daemonraco.com/",
-	"_url_doc": "http://toobasic.daemonraco.com/?action=mddoc&doc=README.md",
+	"url": "https://github.com/daemonraco/toobasic-workflows",
+	"url_doc": "https://github.com/daemonraco/toobasic-workflows/blob/master/README.md",
 	"required_versions": {
 		"php": "5.4",
 		"toobasic": "1.1.0",
