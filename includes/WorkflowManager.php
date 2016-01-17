@@ -10,6 +10,7 @@ namespace TooBasic\Workflows;
 //
 // Class aliases.
 use TooBasic\Managers\DBManager;
+use TooBasic\Paths;
 use TooBasic\Sanitizer;
 
 /**
@@ -44,10 +45,11 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 	 *
 	 * @param string $type Flowing item type.
 	 * @param mixed $id Flowing item id.
+	 * @param string $workflowName Workflow name.
 	 * @return \TooBasic\Workflows\ItemFlowRepresentation[] Returns a list of
 	 * item flows.
 	 */
-	public function activeFlows($type = false, $id = false) {
+	public function activeFlows($type = false, $id = false, $workflowName = false) {
 		//
 		// Retrieving the list of active flows from the representation
 		// factory.
@@ -59,6 +61,14 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 			// Filtering.
 			foreach($out as $k => $v) {
 				if($v->type != $type && $v->item != $id) {
+					unset($out[$k]);
+				}
+			}
+		} elseif($workflowName !== false) {
+			//
+			// Filtering.
+			foreach($out as $k => $v) {
+				if($v->workflow != $workflowName) {
 					unset($out[$k]);
 				}
 			}
@@ -393,6 +403,26 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 
 		return $out;
 	}
+	public function knownWorkflows() {
+		//
+		// Default values.
+		$out = array();
+		//
+		// Global dependencies.
+		global $WKFLDefaults;
+		//
+		// Retrieveing paths.
+		$paths = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_WORKFLOWS], '*', Paths::ExtensionJSON, true);
+		//
+		// Generationg names list.
+		foreach($paths as $path) {
+			$info = pathinfo($path);
+			$out[] = $info['filename'];
+		}
+		sort($out);
+
+		return $out;
+	}
 	/**
 	 * This method is capable of taking an active flow and trigger the
 	 * execution its steps until it finishes (ok or not) or reach a waiting
@@ -447,12 +477,12 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 		return $out;
 	}
 	/**
-	 * @fixme this should wake up flows for a certain workflow, not all of them.
 	 * This method changes the status on any flow flagged as waiting to OK.
 	 *
+	 * @param string $workflowName Name of the workflow to wake up.
 	 * @return boolean Returns TRUE when there was no problems updating.
 	 */
-	public function wakeUpItems() {
+	public function wakeUpItems($workflowName) {
 		//
 		// Logging operation start.
 		$this->_log->log(LGGR_LOG_LEVEL_INFO, "Waking up items in status 'WAIT'.");
@@ -467,6 +497,7 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 		$query = $this->_db->queryAdapter()->update('wkfl_item_flows', array(
 			'status' => WKFL_ITEM_FLOW_STATUS_OK
 			), array(
+			'workflow' => $workflowName,
 			'status' => WKFL_ITEM_FLOW_STATUS_WAIT
 			), $prefixes);
 		$stmt = $this->_db->prepare($query[GC_AFIELD_QUERY]);

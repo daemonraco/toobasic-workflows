@@ -64,7 +64,7 @@ class Workflow {
 	/**
 	 * This method provides access to the loaded configuration.
 	 *
-	 * @return \stdClass
+	 * @return \stdClass Returns a configuration object.
 	 */
 	public function config() {
 		//
@@ -263,13 +263,18 @@ class Workflow {
 	}
 	//
 	// Protected methods.
+	/**
+	 * This method check the presence of a valid log pointer.
+	 *
+	 * @throws WorkflowsException
+	 */
 	protected function checkLog() {
 		if(!$this->_log) {
 			throw new WorkflowsException("Log has not been set for this workflow");
 		}
 	}
 	/**
-	 * This method loads current workflow configuration.
+	 * This method loads current workflow's configuration.
 	 */
 	protected function load() {
 		//
@@ -278,7 +283,11 @@ class Workflow {
 			//
 			// Checking log configuration
 			$this->checkLog();
+			//
+			// Logging operation start.
 			$this->_log->log(LGGR_LOG_LEVEL_INFO, "Loading workflow '{$this->name()}'.");
+			//
+			// Reseting current stauts value.
 			$this->_status = false;
 			//
 			// Global dependencies.
