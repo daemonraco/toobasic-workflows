@@ -1,8 +1,18 @@
 <?php
 
+/**
+ * @file workflows.php
+ * @author Alejandro Dario Simi
+ */
+//
+// Class aliases.
 use TooBasic\Shell\Color;
 use TooBasic\Shell\Option;
 
+/**
+ * @class WorkflowsCron
+ * This cron tool provides a mechanism to run recurring workflow tasks.
+ */
 class WorkflowsCron extends TooBasic\Shell\ShellCron {
 	//
 	// Constants.
@@ -10,16 +20,25 @@ class WorkflowsCron extends TooBasic\Shell\ShellCron {
 	const OptionWorkflow = 'Workflow';
 	//
 	// Protected methods.
+	/**
+	 * This methods sets all non-core options handle by this tool.
+	 */
 	protected function setOptions() {
-		$this->_options->setHelpText("This tool provides a mechanism to run preodic workflow tasks.");
+		$this->_options->setHelpText("This tool provides a mechanism to run recurring workflow tasks.");
 
-		$text = "This option triggers the execution of all known workflows. ";
+		$text = "This option triggers the execution of all known workflows.\n";
 		$text.= "You may filter the execution using option '--workflow'.";
 		$this->_options->addOption(Option::EasyFactory(self::OptionRun, array('--run', '-r'), Option::TypeNoValue, $text, 'value'));
 
-		$text = "TODO help text for: '--workflow', '-w'.";
+		$text = "This options provides a way to filter a specific workflow.";
 		$this->_options->addOption(Option::EasyFactory(self::OptionWorkflow, array('--workflow', '-w'), Option::TypeValue, $text, 'value'));
 	}
+	/**
+	 * Ths method performs the execution of all active flows.
+	 *
+	 * @param string $spacer Prefix to add on each log line promptted on
+	 * terminal.
+	 */
 	protected function taskRun($spacer = "") {
 		echo "{$spacer}Running workflows:\n";
 		//
@@ -35,26 +54,34 @@ class WorkflowsCron extends TooBasic\Shell\ShellCron {
 		// Waking up workflows.
 		echo "{$spacer}\tWaking up items:\n";
 		foreach($knownWorkflows as $name) {
+			//
+			// Filtering.
 			if($workflowName && $workflowName != $name) {
 				continue;
 			}
-
+			//
+			// Shaking the bed :)
 			echo "{$spacer}\t\t- '{$name}': ";
 			$manager->wakeUpItems($name);
 			echo Color::Green("Done\n");
 		}
-
+		//
+		// Running workflows.
 		echo "{$spacer}\tRunning workflows:\n";
 		foreach($knownWorkflows as $name) {
+			//
+			// Filtering.
 			if($workflowName && $workflowName != $name) {
 				continue;
 			}
-
+			//
+			// Retrieving active flow for certain workflow.
 			echo "{$spacer}\t\tObtaining active flows for '{$name}': ";
 			$flows = $manager->activeFlows(false, false, $name);
 			$countFlows = count($flows);
 			echo Color::Green("{$countFlows}\n");
-
+			//
+			// Running active flows.
 			if($countFlows) {
 				echo "{$spacer}\t\tRunning flows for '{$name}':\n";
 				foreach($flows as $flow) {
