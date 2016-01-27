@@ -43,7 +43,7 @@ class Workflow {
 	 */
 	protected $_path = false;
 	/**
-	 * @var boolean Current workflow status. It usually change after loading.
+	 * @var boolean Current workflow status. It usually changes after loading.
 	 */
 	protected $_status = false;
 	//

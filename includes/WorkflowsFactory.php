@@ -75,7 +75,7 @@ class WorkflowsFactory extends \TooBasic\Singleton {
 		// Default values.
 		$out = false;
 		//
-		// Checking it the request workflows was already loaded.
+		// Checking if the requested workflow was already loaded.
 		if(isset($this->_workflow[$name])) {
 			$out = $this->_workflow[$name];
 		} else {
@@ -94,7 +94,7 @@ class WorkflowsFactory extends \TooBasic\Singleton {
 			// Checking loaded workflow status.
 			if($this->_workflow[$name]->status()) {
 				//
-				// Storing its pointer for future calles.
+				// Storing its pointer for future calls.
 				$out = $this->_workflow[$name];
 			} else {
 				throw new WorkflowsException("Unable to load workflow '{$name}'.");

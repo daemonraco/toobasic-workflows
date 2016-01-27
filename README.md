@@ -265,6 +265,10 @@ simply running this command:
 $ php shell.php cron workflows --run
 ```
 
+## Status
+[![Code Climate](https://codeclimate.com/github/daemonraco/toobasic-workflows/badges/gpa.svg)](https://codeclimate.com/github/daemonraco/toobasic-workflows)
+[![Issue Count](https://codeclimate.com/github/daemonraco/toobasic-workflows/badges/issue_count.svg)](https://codeclimate.com/github/daemonraco/toobasic-workflows)
+
 ## Documentation
 We suggest you visit these pages to get more information about this module:
 
