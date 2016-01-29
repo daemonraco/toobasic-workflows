@@ -1,6 +1,6 @@
 # Summary
 
-* Introduction
+* [Introduction](README.md)
 * Basics
-   * Installation
+   * [Installation](docs/install.md)
 
