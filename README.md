@@ -19,14 +19,14 @@ Because you are a skillful developer you have these functionalities:
 
 * A table representation called `ImageRepresentation` and it's factory called
 `ImagesFactory`.
-* Method called `validateImage()` inside model `ImagesModel` that allows you
-perform validations on the original image file looking for unacceptable sizes and
-other stuff you don't like in your images.
-* Method called `ImagesModel::setApprovalStatus()` that allows you to set it's
+* A method called `validateImage()` inside a model called `ImagesModel` that
+allows you to perform validations on the original image file looking for
+unacceptable sizes and other stuff you don't like in your images.
+* A method called `ImagesModel::setApprovalStatus()` that allows you to set it's
 approval status through a controller you provide for administrators. Just in case
 the image is horrible :)
-* Finally, you have a method called `ImagesModel::genAssetsFor()` that creates all
-thumbnails, smaller versions and initial settings for your approved image.
+* And finally, you have a method called `ImagesModel::genAssetsFor()` that creates
+all thumbnails, smaller versions and initial settings for your approved image.
 
 ## Statuses
 Based on this example and your code, let's say you have this statuses in your
@@ -40,7 +40,7 @@ system:
 | `APPROVED` | An acceptable image pending assets generation.            | `OK`, `FAILED`         |
 | `REJECTED` | A horrible image.                                         | [final-status]         |
 | `OK`       | A good image approved and published in your site.         | [final-status]         |
-| `FAILED`   | There was a problem when generating assets.               | [final-status]         |
+| `FAILED`   | When there's a problem generating assets.                 | [final-status]         |
 
 
 ## Flow
@@ -63,7 +63,7 @@ Let me say it in a different way:
 Following our example and it's analysis, let's create a workflow configuration
 that represents it.
 Create a file at `ROOTDIR/site/workflows` called `new_image.json` and write this
-in:
+in it:
 ```json
 {
 	"name": "New image",
@@ -107,14 +107,14 @@ in:
 
 _WOW! what the heck is this JSON?!_
 
-I known, it looks complicated, but you'll see the meaning as we explain each step.
+I know, it looks complicated, but you'll see the meaning as we explain each step.
 In the mean time, think about this:
 <center>![new_image](http://i.imgur.com/xWlsAQf.png)</center>
 
 ### Step: validation
 Validations is where you call to your method `ImagesModel::validateImage()`, but
 how do you actually call it?
-Well, if you look at your configuration you see something like `"manager":
+Well, if you look at your configuration you'll see something like `"manager":
 "img_validation"`, this means that you need to have a file at
 `ROOTDIR/site/workflows/steps` called `img_validation.php` and inside it a code
 like this:
@@ -141,7 +141,7 @@ But if it's `INVALID`, it just changes the status of this flow to `DONE` and
 finishes.
 
 ### Step: approval
-As we said before, the approval of an images is something performed by an
+As we said before, the approval of an image is something performed by an
 administrator through some interface.
 This simply means that our workflow doesn't have to do a thing except wait for the
 item's status to change.
@@ -189,9 +189,9 @@ First thing to do is implement the interface `TooBasic\Workflows\Item` in your
 `ImagesFactory`, these interfaces teach your represetations to talk in a common
 language with your workflows.
 
-When you do this, you find your self implementing a method called `type()` in your
-representations and as you can imaging a representation must return the same value
-returned by it's factory in the same method.
+When you do this, you'll find yourself implementing a method called `type()` in
+your representations and as you can imaging a representation must return the same
+value returned by its factory in the same method.
 Also, this type must be a string of no more than ten characters usually in upper
 case.
 Have this type in mind because your gonna be using it later, and for our examples
@@ -259,8 +259,8 @@ protected function basicRun() {
 ```
 
 ### Cron execution
-The last thing you need to know is how to run your workflow and that is achieve by
-simply running this command:
+The last thing you need to know is how to run your workflow and that is achieved
+by simply running this command:
 ```text
 $ php shell.php cron workflows --run
 ```
