@@ -266,6 +266,7 @@ $ php shell.php cron workflows --run
 ```
 
 ## Status
+[![Build Status](https://travis-ci.org/daemonraco/toobasic-workflows.svg?branch=master)](https://travis-ci.org/daemonraco/toobasic-workflows)
 [![Code Climate](https://codeclimate.com/github/daemonraco/toobasic-workflows/badges/gpa.svg)](https://codeclimate.com/github/daemonraco/toobasic-workflows)
 [![Issue Count](https://codeclimate.com/github/daemonraco/toobasic-workflows/badges/issue_count.svg)](https://codeclimate.com/github/daemonraco/toobasic-workflows)
 
