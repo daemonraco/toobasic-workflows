@@ -292,6 +292,7 @@ class Workflow {
 			//
 			// Global dependencies.
 			global $WKFLDefaults;
+			global $Defaults;
 			//
 			// Guessing names.
 			$fileName = Names::SnakeFilename($this->name());
@@ -299,9 +300,20 @@ class Workflow {
 			//
 			// Checking path existence.
 			if($this->_path && is_readable($this->_path)) {
-				$this->_config = json_decode(file_get_contents($this->_path));
-				if($this->_config) {
-					$this->_status = true;
+				//
+				// Loading configuration contents.
+				$jsonString = file_get_contents($this->_path);
+				//
+				// Validating JSON strucutre.
+				if(!$Defaults[GC_DEFAULTS_INSTALLED] && !self::GetValidator()->validate($jsonString, $info)) {
+					$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Workflow '{$this->name()}' specification is not well formed. {$info[JV_FIELD_ERROR][JV_FIELD_MESSAGE]}");
+				} else {
+					//
+					// Loading configuration.
+					$this->_config = json_decode($jsonString);
+					if($this->_config) {
+						$this->_status = true;
+					}
 				}
 			} elseif(!$this->_path) {
 				$this->_log->log(LGGR_LOG_LEVEL_ERROR, "Unknown workflow '{$this->name()}'.");
@@ -321,5 +333,26 @@ class Workflow {
 		}
 
 		return $this->_magic;
+	}
+	//
+	// Protected class methods.
+	/**
+	 * This class method provides access to a JSONValidator object loaded for
+	 * Workflow specifications.
+	 *
+	 * @return \JSONValidator Returns a loaded validator.
+	 */
+	protected static function GetValidator() {
+		//
+		// Validators cache.
+		static $validator = false;
+		//
+		// Checking if the validators is loaded.
+		if(!$validator) {
+			global $Directories;
+			$validator = JSONValidator::LoadFromFile(__DIR__.'/workflow-specs.json');
+		}
+
+		return $validator;
 	}
 }

@@ -1,0 +1,39 @@
+{
+	"root": "Workflow",
+	"types": {
+		"Workflow": {
+			"name": "+string",
+			"description": "+string",
+			"startsAt": "+string",
+			"steps": "+Steps"
+		},
+		"Steps": "Step{}",
+		"Step": {
+			"description": "+string",
+			"manager": "+string",
+			"connections": "+StepConnections"
+		},
+		"StepConnections": "StepConnection{}",
+		"StepConnection": {
+			"status": "ConnectionStatus",
+			"step": "string",
+			"wait": "ConnectionWait"
+		},
+		"ConnectionWait": {
+			"attempts": "int",
+			"status": "string"
+		},
+		"ConnectionStatus": "/^(DONE|FAILED|WAIT)$/"
+	},
+	"policies": {
+		"Workflow": {
+			"strict": true
+		},
+		"Step": {
+			"strict": true
+		},
+		"StepConnection": {
+			"strict": true
+		}
+	}
+}
