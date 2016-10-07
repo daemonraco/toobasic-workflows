@@ -9,6 +9,7 @@ namespace TooBasic\Workflows;
 
 //
 // Class aliases.
+use JSONValidator;
 use TooBasic\Logs\AbstractLog;
 use TooBasic\MagicProp;
 use TooBasic\Names;
