@@ -1,7 +1,7 @@
 {
 	"name": "TooBasic Workflows",
 	"ucode": "toobasic-workflows",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "This module provides basic workflow mechanism.",
 	"icon": "toobasic-workflows-module-icon-512px",
 	"author": {
@@ -9,12 +9,12 @@
 		"page": "http://daemonraco.com/"
 	},
 	"copyright": "2016",
-	"license": "GPLv3",
+	"license": "MIT",
 	"url": "https://github.com/daemonraco/toobasic-workflows",
 	"url_doc": "https://github.com/daemonraco/toobasic-workflows/blob/master/README.md",
 	"required_versions": {
-		"php": "5.4",
-		"toobasic": "1.1.0",
+		"php": "5.5",
+		"toobasic": "2.2.0",
 		"mod:toobasic-logger": "1.0.0"
 	}
 }

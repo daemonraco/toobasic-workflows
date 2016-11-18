@@ -1,0 +1,8 @@
+{
+	"table": "wkfl_item_flows",
+	"representation_class": "\\TooBasic\\Workflows\\item_flow",
+	"columns_perfix": "ifl_",
+	"columns": {
+		"id": "id"
+	}
+}

@@ -13,11 +13,8 @@ namespace TooBasic\Workflows;
  */
 class ItemFlowsFactory extends \TooBasic\Representations\ItemsFactory {
 	//
-	// Protected core properties.
-	protected $_CP_ColumnsPerfix = 'ifl_';
-	protected $_CP_IDColumn = 'id';
-	protected $_CP_RepresentationClass = '\\TooBasic\\Workflows\\item_flow';
-	protected $_CP_Table = 'wkfl_item_flows';
+	// Protected properties.
+	protected $_corePropsHolder = 'item_flows';
 	//
 	// Public methods.
 	/**
@@ -44,7 +41,7 @@ class ItemFlowsFactory extends \TooBasic\Representations\ItemsFactory {
 		$stmt->execute($query[GC_AFIELD_PARAMS]);
 		//
 		// Generating the list.
-		$idx = "{$this->_CP_ColumnsPerfix}id";
+		$idx = "{$this->_cp_ColumnsPerfix}id";
 		foreach($stmt->fetchAll() as $row) {
 			$out[] = $row[$idx];
 		}
@@ -97,7 +94,7 @@ class ItemFlowsFactory extends \TooBasic\Representations\ItemsFactory {
 		//
 		// Genearating a list.
 		foreach($stmt->fetchAll() as $row) {
-			$idx = "{$this->_CP_ColumnsPerfix}id";
+			$idx = "{$this->_cp_ColumnsPerfix}id";
 			$out[] = $row[$idx];
 		}
 
