@@ -1,4 +1,4 @@
-# TooBasic Module: Workflows 1.0
+# TooBasic Module: Workflows 1.1.0
 ## What is it?
 This __TooBasic__'s module provides a basic workflow mechanism.
 
