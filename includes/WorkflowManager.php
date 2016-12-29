@@ -327,9 +327,9 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 			// Checking active flows.
 			$injected = false;
 			foreach(array(WKFL_ITEM_FLOW_STATUS_OK, WKFL_ITEM_FLOW_STATUS_WAIT) as $status) {
-				$query[GC_AFIELD_PARAMS]['status'] = $status;
+				$query[GC_AFIELD_PARAMS][':status'] = $status;
 				$stmt->execute($query[GC_AFIELD_PARAMS]);
-				if($stmt->rowCount() > 0) {
+				if($stmt->fetch()) {
 					$injected = true;
 					break;
 				}
