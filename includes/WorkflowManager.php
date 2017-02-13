@@ -581,20 +581,22 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 	 *
 	 * @param string $path Absolute path the an image file.
 	 * @param int $maxSize Maximum size in pixels.
+	 * @param mixed[string] $data Returns information about the whole
+	 * operation.
 	 * @return boolean Returns TRUE if the image was cropped successfully.
 	 */
-	protected static function CropImage($path, $maxSize) {
+	protected static function CropImage($path, $maxSize, &$data = null) {
 		//
 		// Default values.
 		$ok = true;
 		//
 		// Basic image information.
-		$data = array(
-			"width" => 0,
-			"height" => 0,
-			"errmsg" => "",
-			"errcode" => 0
-		);
+		$data = [
+			'width' => 0,
+			'height' => 0,
+			'errmsg' => '',
+			'errcode' => 0
+		];
 		//
 		// Loading image as an object.
 		$img = @imagecreatefrompng("{$path}");
@@ -639,8 +641,8 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 		if($ok) {
 			$ok = imagecopyresampled($tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 			if($ok) {
-				$data["width"] = $width;
-				$data["height"] = $height;
+				$data['width'] = $width;
+				$data['height'] = $height;
 			}
 		}
 		//

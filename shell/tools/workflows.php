@@ -71,7 +71,6 @@ class WorkflowsTool extends TooBasic\Shell\ShellTool {
 				//
 				// Injecting...
 				echo "{$spacer}Generating graph for workflow '{$workflow}': ";
-				$error = false;
 				$path = $manager->graphPath($workflow);
 				if($path) {
 					$dest = "{$directory}/{$workflow}.png";
