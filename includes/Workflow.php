@@ -133,7 +133,7 @@ class Workflow {
 		//
 		// Shortcuts.
 		$stepConfig = $this->_config->steps->{$currentStep};
-		$stepPath = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_STEPS], Names::SnakeFilename($stepConfig->manager), Paths::ExtensionPHP);
+		$stepPath = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_STEPS], Names::SnakeFilename($stepConfig->manager), Paths::EXTENSION_PHP);
 		$stepClass = Names::ClassNameWithSuffix($stepConfig->manager, WKFL_CLASS_SUFFIX_STEP);
 		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "        path: '{$stepPath}'", $logParams);
 		$this->_log->log(LGGR_LOG_LEVEL_DEBUG, "       class: '{$stepClass}'", $logParams);
@@ -297,7 +297,7 @@ class Workflow {
 			//
 			// Guessing names.
 			$fileName = Names::SnakeFilename($this->name());
-			$this->_path = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_WORKFLOWS], $fileName, Paths::ExtensionJSON);
+			$this->_path = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_WORKFLOWS], $fileName, Paths::EXTENSION_JSON);
 			//
 			// Checking path existence.
 			if($this->_path && is_readable($this->_path)) {

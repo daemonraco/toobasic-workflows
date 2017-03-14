@@ -16,12 +16,12 @@ use TooBasic\Shell\Option;
 class WorkflowsTool extends TooBasic\Shell\ShellTool {
 	//
 	// Constants.
-	const OptionDirectory = 'Directory';
-	const OptionGenGrapth = 'GenGrapth';
-	const OptionInject = 'Inject';
-	const OptionId = 'Id';
-	const OptionType = 'Type';
-	const OptionWorkflow = 'Workflow';
+	const OPTION_DIRECTORY = 'Directory';
+	const OPTION_GEN_GRAPTH = 'GenGrapth';
+	const OPTION_INJECT = 'Inject';
+	const OPTION_ID = 'Id';
+	const OPTION_TYPE = 'Type';
+	const OPTION_WORKFLOW = 'Workflow';
 	//
 	// Protected methods.
 	/**
@@ -31,39 +31,39 @@ class WorkflowsTool extends TooBasic\Shell\ShellTool {
 		$this->_options->setHelpText("This tool provides a mechanism to run some manual workflow tasks.");
 
 		$text = 'This options specifies a directory where to drop images.';
-		$this->_options->addOption(Option::EasyFactory(self::OptionDirectory, array('--directory', '-d'), Option::TypeValue, $text, 'path'));
+		$this->_options->addOption(Option::EasyFactory(self::OPTION_DIRECTORY, array('--directory', '-d'), Option::TYPE_VALUE, $text, 'path'));
 
 		$text = "This options generates an graph for certain workflow configuration.\n";
 		$text = "Requires the option '--directory'.";
-		$this->_options->addOption(Option::EasyFactory(self::OptionGenGrapth, array('--gen-flow', '-gf'), Option::TypeValue, $text, 'name'));
+		$this->_options->addOption(Option::EasyFactory(self::OPTION_GEN_GRAPTH, array('--gen-flow', '-gf'), Option::TYPE_VALUE, $text, 'name'));
 
 		$text = "This option triggers the injection of a new flow.\n";
 		$text.= "It requires options: '--id', '--type' and '--workflow'";
-		$this->_options->addOption(Option::EasyFactory(self::OptionInject, array('--inject', '-j'), Option::TypeNoValue, $text, 'value'));
+		$this->_options->addOption(Option::EasyFactory(self::OPTION_INJECT, array('--inject', '-j'), Option::TYPE_NO_VALUE, $text, 'value'));
 
 		$text = "This options specifies a flowing item ID.";
-		$this->_options->addOption(Option::EasyFactory(self::OptionId, array('--id', '-i'), Option::TypeValue, $text, 'value'));
+		$this->_options->addOption(Option::EasyFactory(self::OPTION_ID, array('--id', '-i'), Option::TYPE_VALUE, $text, 'value'));
 
 		$text = "This options specifies a flowing item type.";
-		$this->_options->addOption(Option::EasyFactory(self::OptionType, array('--type', '-t'), Option::TypeValue, $text, 'value'));
+		$this->_options->addOption(Option::EasyFactory(self::OPTION_TYPE, array('--type', '-t'), Option::TYPE_VALUE, $text, 'value'));
 
 		$text = "This options specifies a workflow.";
-		$this->_options->addOption(Option::EasyFactory(self::OptionWorkflow, array('--workflow', '-w'), Option::TypeValue, $text, 'name'));
+		$this->_options->addOption(Option::EasyFactory(self::OPTION_WORKFLOW, array('--workflow', '-w'), Option::TYPE_VALUE, $text, 'name'));
 	}
 	protected function taskGenGrapth($spacer = "") {
 		//
 		// Checking required parameters.
-		if(!$this->params->opt->{self::OptionDirectory}) {
-			$this->setError(self::ErrorWrongParameters, 'No output directory specified');
+		if(!$this->params->opt->{self::OPTION_DIRECTORY}) {
+			$this->setError(self::ERROR_WRONG_PARAMETERS, 'No output directory specified');
 		} else {
 			//
 			// Shortcuts.
-			$directory = $this->params->opt->{self::OptionDirectory};
-			$workflow = $this->params->opt->{self::OptionGenGrapth};
+			$directory = $this->params->opt->{self::OPTION_DIRECTORY};
+			$workflow = $this->params->opt->{self::OPTION_GEN_GRAPTH};
 			//
 			// Checking directory.
 			if(!is_dir($directory) || !is_writable($directory)) {
-				$this->setError(self::ErrorWrongParameters, "Directory '{$directory}' is not valid");
+				$this->setError(self::ERROR_WRONG_PARAMETERS, "Directory '{$directory}' is not valid");
 			} else {
 				//
 				// Loading manager.
@@ -94,18 +94,18 @@ class WorkflowsTool extends TooBasic\Shell\ShellTool {
 	protected function taskInject($spacer = "") {
 		//
 		// Checking required parameters.
-		if(!$this->params->opt->{self::OptionType}) {
-			$this->setError(self::ErrorWrongParameters, 'No type specified');
-		} elseif(!$this->params->opt->{self::OptionId}) {
-			$this->setError(self::ErrorWrongParameters, 'No ID specified');
-		} elseif(!$this->params->opt->{self::OptionWorkflow}) {
-			$this->setError(self::ErrorWrongParameters, 'No workflow specified');
+		if(!$this->params->opt->{self::OPTION_TYPE}) {
+			$this->setError(self::ERROR_WRONG_PARAMETERS, 'No type specified');
+		} elseif(!$this->params->opt->{self::OPTION_ID}) {
+			$this->setError(self::ERROR_WRONG_PARAMETERS, 'No ID specified');
+		} elseif(!$this->params->opt->{self::OPTION_WORKFLOW}) {
+			$this->setError(self::ERROR_WRONG_PARAMETERS, 'No workflow specified');
 		} else {
 			//
 			// Shortcuts.
-			$type = $this->params->opt->{self::OptionType};
-			$id = $this->params->opt->{self::OptionId};
-			$workflow = $this->params->opt->{self::OptionWorkflow};
+			$type = $this->params->opt->{self::OPTION_TYPE};
+			$id = $this->params->opt->{self::OPTION_ID};
+			$workflow = $this->params->opt->{self::OPTION_WORKFLOW};
 			//
 			// Loading manager.
 			$manager = \TooBasic\Workflows\WorkflowManager::Instance();

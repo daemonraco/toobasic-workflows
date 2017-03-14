@@ -412,7 +412,7 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 		global $WKFLDefaults;
 		//
 		// Retrieveing paths.
-		$paths = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_WORKFLOWS], '*', Paths::ExtensionJSON, true);
+		$paths = Paths::Instance()->customPaths($WKFLDefaults[WKFL_DEFAULTS_PATHS][WKFL_DEFAULTS_PATH_WORKFLOWS], '*', Paths::EXTENSION_JSON, true);
 		//
 		// Generationg names list.
 		foreach($paths as $path) {
@@ -517,14 +517,14 @@ class WorkflowManager extends \TooBasic\Managers\Manager {
 		//
 		// Checking if it really is a directory.
 		if(!is_dir($WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH])) {
-			\TooBasic\debugThing("'{$WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH]}' is not a directory", \TooBasic\DebugThingTypeError);
+			\TooBasic\debugThing("'{$WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH]}' is not a directory", \TooBasic\DEBUG_THING_TYPE_ERROR);
 			die;
 		}
 		//
 		// Checking if the current system user has permissions to write
 		// inside it.
 		if(!is_writable($WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH])) {
-			\TooBasic\debugThing("'{$WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH]}' is not writable", \TooBasic\DebugThingTypeError);
+			\TooBasic\debugThing("'{$WKFLDefaults[WKFL_DEFAULTS_GRAPHS_PATH]}' is not writable", \TooBasic\DEBUG_THING_TYPE_ERROR);
 			die;
 		}
 	}

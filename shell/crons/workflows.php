@@ -16,8 +16,8 @@ use TooBasic\Shell\Option;
 class WorkflowsCron extends TooBasic\Shell\ShellCron {
 	//
 	// Constants.
-	const OptionRun = 'Run';
-	const OptionWorkflow = 'Workflow';
+	const OPTION_RUN = 'Run';
+	const OPTION_WORKFLOW = 'Workflow';
 	//
 	// Protected methods.
 	/**
@@ -28,10 +28,10 @@ class WorkflowsCron extends TooBasic\Shell\ShellCron {
 
 		$text = "This option triggers the execution of all known workflows.\n";
 		$text.= "You may filter the execution using option '--workflow'.";
-		$this->_options->addOption(Option::EasyFactory(self::OptionRun, array('--run', '-r'), Option::TypeNoValue, $text, 'value'));
+		$this->_options->addOption(Option::EasyFactory(self::OPTION_RUN, array('--run', '-r'), Option::TYPE_NO_VALUE, $text, 'value'));
 
 		$text = "This options provides a way to filter a specific workflow.";
-		$this->_options->addOption(Option::EasyFactory(self::OptionWorkflow, array('--workflow', '-w'), Option::TypeValue, $text, 'value'));
+		$this->_options->addOption(Option::EasyFactory(self::OPTION_WORKFLOW, array('--workflow', '-w'), Option::TYPE_VALUE, $text, 'value'));
 	}
 	/**
 	 * Ths method performs the execution of all active flows.
@@ -46,7 +46,7 @@ class WorkflowsCron extends TooBasic\Shell\ShellCron {
 		$manager = \TooBasic\Workflows\WorkflowManager::Instance();
 		//
 		// Loading filters.
-		$workflowName = isset($this->params->opt->{self::OptionWorkflow}) ? $this->params->opt->{self::OptionWorkflow} : false;
+		$workflowName = isset($this->params->opt->{self::OPTION_WORKFLOW}) ? $this->params->opt->{self::OPTION_WORKFLOW} : false;
 		//
 		// Loading known workflow names.
 		$knownWorkflows = $manager->knownWorkflows();
